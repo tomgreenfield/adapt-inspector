@@ -1,0 +1,10 @@
+{{! Maintainers - Tom Greenfield}}
+<div class="inspector">
+	<a href="#" class="inspector-inner" title="{{#if _parentId}}Parent: {{_parentId}}
+Classes: {{#if _classes}}{{_classes}}{{else}}<none>{{/if}}
+{{#if _component}}Layout: {{_layout}}
+Show progress: {{#if _pageLevelProgress._isEnabled}}true{{else}}false{{/if}}
+Progress title: {{title}}{{/if}}{{/if}}">
+		{{#if _component}}{{_component}} {{/if}}{{_type}} <span class="inspector-id">{{_id}}</span>
+	</a>
+</div>

@@ -1,0 +1,23 @@
+{
+    "name": "adapt-inspector",
+    "version": "0.0.1",
+    "description": "An extension to inspect details of elements on a page. Reviewers may click the element IDs to create tickets on Trac.",
+    "main": "",
+    "scripts": {
+        "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/tomgreenfield/adapt-inspector.git"
+    },
+    "author": "Tom Greenfield",
+    "license": "GPL v3",
+    "bugs": {
+        "url": "https://github.com/tomgreenfield/adapt-inspector/issues"
+    },
+    "devDependencies": {
+        "karma": "~0.10",
+        "karma-mocha": "*",
+        "karma-expect": "*"
+    }
+}

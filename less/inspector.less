@@ -1,0 +1,35 @@
+.inspector-container {
+	position: relative;
+}
+
+.inspector-visible {
+	outline: 1px dashed;
+	> .inspector {
+		opacity: 0.8;
+	}
+}
+
+.inspector {
+	position: absolute;
+	width: 100%;
+	top: 0;
+	font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+	font-size: 12px;
+	opacity: 0;
+	text-align: center;
+	transition: opacity 0.3s ease-out;
+}
+
+.inspector-inner {
+	display: inline-block;
+	padding: 0 10px;
+	border: 1px solid #666;
+	background-color: #333;
+	color: #fff;
+	outline-style: none;
+	text-decoration: none;
+}
+
+.inspector-id {
+	color: #3cf;
+}

@@ -1,0 +1,15 @@
+{
+	"name": "adapt-inspector",
+	"homepage": "https://github.com/tomgreenfield/adapt-inspector",
+	"authors": [
+		"Tom Greenfield",
+		"Daryl Hedley"
+	],
+	"description": "An extension to inspect details of elements on a page. Reviewers may click the element IDs to create tickets on Trac.",
+	"main": "/js/adapt-inspector.js",
+	"keywords": [
+		"adapt-plugin",
+		"adapt-extension"
+	],
+	"license": "GPLv3"
+}
