@@ -33,7 +33,7 @@ define(function(require) {
 		onClick: function(event) {
 			var tracUrl = Adapt.config.get("_inspector")._tracUrl;
 			var clickedId = this.model.get("_id");
-			var clickedTitle = this.model.get("displayTitle");
+			var clickedTitle = $("<div/>").html(this.model.get("displayTitle")).text();
 			var clickedLocation = Adapt.location._currentId;
 			var params = clickedId;
 
