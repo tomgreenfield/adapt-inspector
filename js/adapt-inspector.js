@@ -44,7 +44,7 @@ define(function(require) {
 			if (clickedTitle) params += " " + clickedTitle;
 			if (clickedId != clickedLocation) params += " (" + Adapt.location._contentType + " " + clickedLocation + ")";
 
-			window.open(tracUrl + "/newticket?summary=" + params);
+			window.open(tracUrl + "/newticket?summary=" + encodeURIComponent(params));
 		},
 
 		onEnter: function() {
