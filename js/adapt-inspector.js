@@ -40,7 +40,7 @@ define(function(require) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			if (!tracUrl) return console.log("No _tracUrl defined in config.json.");
+			if (!tracUrl) return console.log("Inspector: No _tracUrl defined in config.json.");
 			if (clickedTitle) params += " " + clickedTitle;
 			if (clickedId != clickedLocation) params += " (" + Adapt.location._contentType + " " + clickedLocation + ")";
 
@@ -94,7 +94,7 @@ define(function(require) {
 			Adapt.on("menuView:postRender pageView:postRender articleView:postRender blockView:postRender componentView:postRender", function(view) {
 				addInspector(view);
 				view.$el.addClass("inspector-container");
-				if (!Adapt.config.get("_inspector")._tracUrl) $(".inspector-inner").css("cursor", "default");
+				if (!Adapt.config.get("_inspector")._tracUrl) $(".inspector-inner").addClass("trac-url-disabled");
 			});
 		}
 	});

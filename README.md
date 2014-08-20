@@ -11,6 +11,6 @@ An extension to inspect details of elements on a page. Reviewers may click the e
 	"_tracUrl": ""
 }
 ```
-
 * Toggle `_isEnabled` to turn Inspector on or off.
 * Populate `_tracUrl` to make element IDs clickable to a specific Trac.
+* Copy the extension folder into the src > extensions directory and run an appropriate Grunt task.
