@@ -4,7 +4,7 @@ An extension to inspect details of elements on a page. Reviewers may click the e
 
 ## Installation
 
-* Add the following JSON to `config.json`:
+* Add the following to `config.json`:
 ```json
 "_inspector": {
 	"_isEnabled": true,
@@ -13,4 +13,5 @@ An extension to inspect details of elements on a page. Reviewers may click the e
 ```
 * Toggle `_isEnabled` to turn Inspector on or off.
 * Populate `_tracUrl` to make element IDs clickable to a specific Trac.
-* Copy the extension folder into the src > extensions directory and run an appropriate Grunt task.
+* With [Adapt CLI](https://github.com/adaptlearning/adapt-cli) installed, run `adapt install adapt-inspector`. Alternatively, manually copy the extension folder into the src > extensions directory.
+* Run an appropriate Grunt task.

@@ -1,10 +1,16 @@
-{{! Maintainers - Tom Greenfield}}
+{{! Maintainers - Tom Greenfield }}
 <div class="inspector">
 	<a href="#" class="inspector-inner" title="{{#if _parentId}}Parent: {{_parentId}}
-Classes: {{#if _classes}}{{_classes}}{{else}}<none>{{/if}}
-{{#if _component}}Layout: {{_layout}}
-Show progress: {{#if _pageLevelProgress._isEnabled}}true{{else}}false{{/if}}
-Progress title: {{title}}{{/if}}{{/if}}">
+{{/if}}{{#if _classes}}Classes: {{_classes}}
+{{/if}}{{#if _layout}}Layout: {{_layout}}
+{{/if}}Title: {{#if title}}{{title}}{{else}}<none>{{/if}}{{#if _component}}
+Page Level Progress: {{#if _pageLevelProgress._isEnabled}}enabled{{else}}disabled{{/if}}{{/if}}{{#if _selectable}}
+Correct:{{#each _items}}{{#if _shouldBeSelected}} {{numbers @index}}{{/if}}{{/each}}{{/if}}{{#if_value_equals _component "matching"}}
+Correct:{{#each _items}}{{#if ../_items.[1]}}
+{{numbers @index}}.{{/if}}{{#each _options}}{{#if _isCorrect}} {{text}}{{/if}}{{/each}}{{/each}}{{/if_value_equals}}{{#if_value_equals _component "slider"}}
+Correct: {{#if _correctAnswer}}{{_correctAnswer}}{{else}}{{_correctRange._bottom}}–{{_correctRange._top}}{{/if}}{{/if_value_equals}}{{#if_value_equals _component "textinput"}}
+Correct:{{#each _items}}{{#if ../_items.[1]}}
+{{numbers @index}}.{{/if}}{{#each _answers}} {{this}}{{/each}}{{/each}}{{/if_value_equals}}">
 		{{#if _component}}{{_component}} {{/if}}{{_type}} <span class="inspector-id">{{_id}}</span>
 	</a>
 </div>
