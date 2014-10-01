@@ -17,34 +17,42 @@ define(function(require) {
 		},
 
 		events: {
-			"click .inspector-inner": "onClick",
+			"click .trac-url-disabled": "onClickDisabled",
 			"mouseenter": "onEnter",
 			"mouseleave": "onLeave",
 		},
 
 		render: function() {
-			var data = this.model.toJSON();
 			var template = Handlebars.templates["inspector"];
+			var data = this.model.toJSON();
 			
 			this.$el.append(template(data));
+			this.$el.addClass("inspector-container");
+			this.$(".inspector").css("margin-left", "-" + this.$(".inspector").outerWidth() / 2 + "px");
+			
+			if (Adapt.config.get("_inspector")._tracUrl) this.addTracUrl();
+			else this.$(".inspector").addClass("trac-url-disabled");
+
 			return this;
 		},
 
-		onClick: function(event) {
+		addTracUrl: function() {
+			var title = $("<div/>").html(this.model.get("displayTitle")).text();
+			var id = this.model.get("_id");
+			var location = Adapt.location._currentId;
+			var locationType = Adapt.location._contentType;
 			var tracUrl = Adapt.config.get("_inspector")._tracUrl;
-			var clickedId = this.model.get("_id");
-			var clickedTitle = $("<div/>").html(this.model.get("displayTitle")).text();
-			var clickedLocation = Adapt.location._currentId;
-			var params = clickedId;
+			var params = id;
+			
+			if (title) params += " " + title;
+			if (id != location) params += " (" + locationType + " " + location + ")";
 
-			event.preventDefault();
-			event.stopPropagation();
+			this.$(".inspector-inner").attr("href", tracUrl + "/newticket?summary=" + encodeURIComponent(params));
+		},
 
-			if (!tracUrl) return console.log("Inspector: No _tracUrl defined in config.json.");
-			if (clickedTitle) params += " " + clickedTitle;
-			if (clickedId != clickedLocation) params += " (" + Adapt.location._contentType + " " + clickedLocation + ")";
-
-			window.open(tracUrl + "/newticket?summary=" + encodeURIComponent(params));
+		onClickDisabled: function() {
+			console.log("Inspector: No _tracUrl defined in config.json.");
+			return false;
 		},
 
 		onEnter: function() {
@@ -85,16 +93,10 @@ define(function(require) {
 
 	});
 
-	function addInspector(view) {
-		new InspectorView({el: view.$el, model: view.model});
-	}
-
 	Adapt.on("app:dataReady", function() {
 		if (!Adapt.device.touch && Adapt.config.get("_inspector") && Adapt.config.get("_inspector")._isEnabled) {
 			Adapt.on("menuView:postRender pageView:postRender articleView:postRender blockView:postRender componentView:postRender", function(view) {
-				addInspector(view);
-				view.$el.addClass("inspector-container");
-				if (!Adapt.config.get("_inspector")._tracUrl) $(".inspector-inner").addClass("trac-url-disabled");
+				new InspectorView({ el: view.$el, model: view.model });
 			});
 		}
 	});
