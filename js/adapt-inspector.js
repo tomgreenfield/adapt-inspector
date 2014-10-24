@@ -11,6 +11,8 @@ define(function(require) {
 
 	var InspectorView = Backbone.View.extend({
 
+		containers: [],
+
 		initialize: function() {
 			this.listenTo(Adapt, "remove", this.remove);
 			this.render();
@@ -19,17 +21,20 @@ define(function(require) {
 		events: {
 			"click .trac-url-disabled": "onClickDisabled",
 			"mouseenter": "onEnter",
-			"mouseleave": "onLeave",
+			"mouseleave": "onLeave"
 		},
 
 		render: function() {
 			var template = Handlebars.templates["inspector"];
 			var data = this.model.toJSON();
-			
-			this.$el.append(template(data));
-			this.$el.addClass("inspector-container");
-			this.$(".inspector").css("margin-left", "-" + this.$(".inspector").outerWidth() / 2 + "px");
-			
+			var containerClass = "inspector-container-" + this.model.get("_id");
+			var $element;
+
+			this.containers.push(containerClass);
+			this.$el.append(template(data)).addClass("inspector-container " + containerClass);
+			$element = $("." + containerClass).children(".inspector");
+			$element.css("margin-left", "-" + $element.width() / 2 + "px");
+
 			if (Adapt.config.get("_inspector")._tracUrl) this.addTracUrl();
 			else this.$(".inspector").addClass("trac-url-disabled");
 
@@ -66,38 +71,29 @@ define(function(require) {
 		},
 
 		setVisibility: function() {
-			var hoveredElement;
-
 			$(".inspector-container").removeClass("inspector-visible");
 			$(".inspector").on("transitionend", function() { $(this).hide(); });
 
-			if ($(".component.inspector-active:hover").length !== 0) {
-				hoveredElement = ".component.inspector-active";
-			} else if ($(".block.inspector-active:hover").length !== 0) {
-				hoveredElement = ".block.inspector-active";
-			} else if ($(".article.inspector-active:hover").length !== 0) {
-				hoveredElement = ".article.inspector-active";
-			} else if ($(".page.inspector-active:hover").length !== 0) {
-				hoveredElement = ".page.inspector-active";
-			} else if ($(".menu-item.inspector-active:hover").length !== 0) {
-				hoveredElement = ".menu-item.inspector-active";
-			} else if ($(".menu.inspector-active:hover").length !== 0) {
-				hoveredElement = ".menu.inspector-active";
+			for (var i = this.containers.length - 1; i >= 0; --i) {
+				var $container = $("." + this.containers[i] + ".inspector-active:hover");
+				if ($container.length !== 0) return this.showInspector($container);
 			}
-			else return;
+		},
 
-			$(hoveredElement + " > .inspector").off().show(0, function() {
-				$(hoveredElement).addClass("inspector-visible");
-			});
+		showInspector: function($container) {
+			var $element = $container.children(".inspector");
+			var minusHalfWidth = "-" + $element.width() / 2 + "px";
+
+			if ($element.css("margin-left") !== minusHalfWidth) $element.css("margin-left", minusHalfWidth);
+
+			$element.off().show(0, function() { $container.addClass("inspector-visible"); });
 		}
 
 	});
 
-	Adapt.on("app:dataReady", function() {
+	Adapt.on("menuView:postRender pageView:postRender articleView:postRender blockView:postRender componentView:postRender", function(view) {
 		if (!Adapt.device.touch && Adapt.config.get("_inspector") && Adapt.config.get("_inspector")._isEnabled) {
-			Adapt.on("menuView:postRender pageView:postRender articleView:postRender blockView:postRender componentView:postRender", function(view) {
-				new InspectorView({ el: view.$el, model: view.model });
-			});
+			new InspectorView({ el: view.$el, model: view.model });
 		}
 	});
 

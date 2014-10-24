@@ -1,6 +1,6 @@
 {
     "name": "adapt-inspector",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "An extension to inspect details of elements on a page. Reviewers may click the element IDs to create tickets on Trac.",
     "main": "",
     "scripts": {
