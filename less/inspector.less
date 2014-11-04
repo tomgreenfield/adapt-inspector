@@ -1,5 +1,7 @@
-.inspector-container {
-	position: relative;
+[class*="inspector-container"] {
+	:not(.hotspot-items) > & {
+		position: relative;
+	}
 }
 
 .inspector-visible {

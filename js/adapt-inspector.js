@@ -27,12 +27,12 @@ define(function(require) {
 		render: function() {
 			var template = Handlebars.templates["inspector"];
 			var data = this.model.toJSON();
-			var containerClass = "inspector-container-" + this.model.get("_id");
+			var container = "inspector-container-" + this.model.get("_id");
 			var $element;
 
-			this.containers.push(containerClass);
-			this.$el.append(template(data)).addClass("inspector-container " + containerClass);
-			$element = $("." + containerClass).children(".inspector");
+			this.containers.push(container);
+			this.$el.append(template(data)).addClass(container);
+			$element = $("." + container).children(".inspector");
 			$element.css("margin-left", "-" + $element.width() / 2 + "px");
 
 			if (Adapt.config.get("_inspector")._tracUrl) this.addTracUrl();
@@ -71,7 +71,7 @@ define(function(require) {
 		},
 
 		setVisibility: function() {
-			$(".inspector-container").removeClass("inspector-visible");
+			$("[class*='inspector-container']").removeClass("inspector-visible");
 			$(".inspector").on("transitionend", function() { $(this).hide(); });
 
 			for (var i = this.containers.length - 1; i >= 0; --i) {

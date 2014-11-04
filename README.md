@@ -15,3 +15,5 @@ An extension to inspect details of elements on a page. Reviewers may click the e
 * Populate `_tracUrl` to make element IDs clickable to a specific Trac.
 * With [Adapt CLI](https://github.com/adaptlearning/adapt-cli) installed, run `adapt install adapt-inspector`. Alternatively, manually copy the extension folder into the src > extensions directory.
 * Run an appropriate Grunt task.
+
+Note: Inspector is not supported in IE8.
