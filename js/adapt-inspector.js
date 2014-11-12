@@ -33,6 +33,7 @@ define(function(require) {
 			this.containers.push(container);
 			this.$el.append(template(data)).addClass(container);
 			$element = $("." + container).children(".inspector");
+			if (this.$el.width() < $element.width()) $element.css("min-width", $element.width());
 			$element.css("margin-left", "-" + $element.width() / 2 + "px");
 
 			if (Adapt.config.get("_inspector")._tracUrl) this.addTracUrl();
