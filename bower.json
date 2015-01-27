@@ -5,7 +5,7 @@
 		"Tom Greenfield",
 		"Daryl Hedley"
 	],
-	"description": "An extension to inspect details of elements on a page. Reviewers may click the element IDs to create tickets on Trac.",
+	"description": "An extension to inspect details of elements.",
 	"main": "/js/adapt-inspector.js",
 	"keywords": [
 		"adapt-plugin",

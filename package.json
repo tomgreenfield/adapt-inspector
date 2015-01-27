@@ -1,7 +1,7 @@
 {
     "name": "adapt-inspector",
-    "version": "0.1.4",
-    "description": "An extension to inspect details of elements on a page. Reviewers may click the element IDs to create tickets on Trac.",
+    "version": "0.1.5",
+    "description": "An extension to inspect details of elements.",
     "main": "",
     "scripts": {
         "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
