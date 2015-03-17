@@ -25,7 +25,7 @@ define(function(require) {
 		},
 
 		render: function() {
-			var template = Handlebars.templates["inspector"];
+			var template = Handlebars.templates.inspector;
 			var data = this.model.toJSON();
 			var container = "inspector-container-" + this.model.get("_id");
 			var $element;
@@ -77,6 +77,7 @@ define(function(require) {
 
 			for (var i = this.containers.length - 1; i >= 0; --i) {
 				var $container = $("." + this.containers[i] + ".inspector-active:hover");
+
 				if ($container.length !== 0) return this.showInspector($container);
 			}
 		},
@@ -92,10 +93,16 @@ define(function(require) {
 
 	});
 
-	Adapt.on("menuView:postRender pageView:postRender articleView:postRender blockView:postRender componentView:postRender", function(view) {
-		if (!Adapt.device.touch && Adapt.config.get("_inspector") && Adapt.config.get("_inspector")._isEnabled) {
+	Adapt.on("app:dataReady", function() {
+		var config = Adapt.config.get("_inspector");
+
+		if (Adapt.device.touch || !config || !config._isEnabled) return;
+
+		var views = config._elementsToInspect || ["menu", "page", "article", "block", "component"];
+
+		Adapt.on(views.join("View:postRender ") + "View:postRender", function(view) {
 			new InspectorView({ el: view.$el, model: view.model });
-		}
+		});
 	});
 
 });

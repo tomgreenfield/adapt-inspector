@@ -18,21 +18,19 @@
 	font: 12px "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
 	opacity: 0;
 	transition: opacity 0.3s ease-out;
-}
-
-.inspector-inner {
-	display: inline-block;
-	padding: 4px 6px;
-	border: 1px solid #666;
-	background-color: #333;
-	color: #fff;
-	outline-style: none;
-	text-decoration: none;
-	.trac-url-disabled & {
-		cursor: default;
+	&-inner {
+		display: inline-block;
+		padding: 4px 6px;
+		border: 1px solid #666;
+		background-color: #333;
+		color: #fff;
+		outline-style: none;
+		text-decoration: none;
+		.trac-url-disabled & {
+			cursor: default;
+		}
 	}
-}
-
-.inspector-id {
-	color: #3cf;
+	&-id {
+		color: #3cf;
+	}
 }
