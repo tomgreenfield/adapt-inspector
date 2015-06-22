@@ -21,5 +21,3 @@ An extension to inspect details of elements.
 * Elements are annotated on hover with their types and IDs.
 * Click the element IDs to create tickets on Trac.
 * Roll over the IDs for tooltips containing additional details.
-
-Note: Inspector is not supported in IE8.

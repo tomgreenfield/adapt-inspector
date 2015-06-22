@@ -7,8 +7,6 @@
 define(function(require) {
 
 	var Adapt = require("coreJS/adapt");
-	var Backbone = require("backbone");
-
 	var InspectorView = Backbone.View.extend({
 
 		containers: [],
@@ -18,10 +16,17 @@ define(function(require) {
 			this.render();
 		},
 
-		events: {
-			"click .trac-url-disabled": "onClickDisabled",
-			"mouseenter": "onEnter",
-			"mouseleave": "onLeave"
+		events: function() {
+			var events = { "click .trac-url-disabled": "onClickDisabled" };
+
+			if (!Adapt.device.touch) {
+				events.mouseenter = "onEnter";
+				events.mouseleave = "onLeave";
+			} else {
+				events.touchend = "onTouch";
+			}
+
+			return events;
 		},
 
 		render: function() {
@@ -32,11 +37,13 @@ define(function(require) {
 
 			this.containers.push(container);
 			this.$el.append(template(data)).addClass(container);
+			this.tracUrl = Adapt.config.get("_inspector")._tracUrl;
+
 			$element = $("." + container).children(".inspector");
 			if (this.$el.width() < $element.width()) $element.css("min-width", $element.width());
 			$element.css("margin-left", "-" + $element.width() / 2 + "px");
 
-			if (Adapt.config.get("_inspector")._tracUrl) this.addTracUrl();
+			if (this.tracUrl) this.addTracUrl();
 			else this.$(".inspector").addClass("trac-url-disabled");
 
 			return this;
@@ -47,17 +54,15 @@ define(function(require) {
 			var id = this.model.get("_id");
 			var location = Adapt.location._currentId;
 			var locationType = Adapt.location._contentType;
-			var tracUrl = Adapt.config.get("_inspector")._tracUrl;
 			var params = id;
 			
 			if (title) params += " " + title;
-			if (id != location) params += " (" + locationType + " " + location + ")";
+			if (id !== location) params += " (" + locationType + " " + location + ")";
 
-			this.$(".inspector-inner").attr("href", tracUrl + "/newticket?summary=" + encodeURIComponent(params));
+			this.$(".inspector").attr("href", this.tracUrl + "/newticket?summary=" + encodeURIComponent(params));
 		},
 
 		onClickDisabled: function() {
-			console.log("Inspector: No _tracUrl defined in config.json.");
 			return false;
 		},
 
@@ -71,14 +76,25 @@ define(function(require) {
 			this.setVisibility();
 		},
 
-		setVisibility: function() {
-			$("[class*='inspector-container']").removeClass("inspector-visible");
-			$(".inspector").on("transitionend", function() { $(this).hide(); });
+		onTouch: function(event) {
+			event.stopPropagation();
 
+			var $element = this.$(".inspector");
+
+			if (this.tracUrl) $element.removeClass("trac-url-disabled");
+			if (this.$el.hasClass("inspector-visible")) return;
+
+			$element.addClass("trac-url-disabled");
+			this.hideInspector();
+			this.showInspector(this.$el);
+		},
+
+		setVisibility: function() {
+			this.hideInspector();
 			for (var i = this.containers.length - 1; i >= 0; --i) {
 				var $container = $("." + this.containers[i] + ".inspector-active:hover");
 
-				if ($container.length !== 0) return this.showInspector($container);
+				if ($container.length > 0) return this.showInspector($container);
 			}
 		},
 
@@ -89,6 +105,11 @@ define(function(require) {
 			if ($element.css("margin-left") !== minusHalfWidth) $element.css("margin-left", minusHalfWidth);
 
 			$element.off().show(0, function() { $container.addClass("inspector-visible"); });
+		},
+
+		hideInspector: function() {
+			$(".inspector").on("transitionend", function() { $(this).hide(); });
+			$("[class*='inspector-container']").removeClass("inspector-visible");
 		}
 
 	});
@@ -96,7 +117,7 @@ define(function(require) {
 	Adapt.on("app:dataReady", function() {
 		var config = Adapt.config.get("_inspector");
 
-		if (Adapt.device.touch || !config || !config._isEnabled) return;
+		if (!config || !config._isEnabled) return;
 
 		var views = config._elementsToInspect || ["menu", "page", "article", "block", "component"];
 
