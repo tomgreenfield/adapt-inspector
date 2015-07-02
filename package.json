@@ -1,6 +1,6 @@
 {
 	"name": "adapt-inspector",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "An extension to inspect details of elements.",
 	"repository": {
 		"type": "git",

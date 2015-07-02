@@ -13,6 +13,9 @@ define(function(require) {
 
 		initialize: function() {
 			this.listenTo(Adapt, "remove", this.remove);
+			this.listenTo(Adapt, "device:resize", function() {
+				this.checkMargin(this.$el.children(".inspector"));
+			});
 			this.render();
 		},
 
@@ -33,23 +36,38 @@ define(function(require) {
 			var template = Handlebars.templates.inspector;
 			var data = this.model.toJSON();
 			var container = "inspector-container-" + this.model.get("_id");
-			var $element;
 
 			this.containers.push(container);
 			this.$el.append(template(data)).addClass(container);
-			this.tracUrl = Adapt.config.get("_inspector")._tracUrl;
-
-			$element = $("." + container).children(".inspector");
-			if (this.$el.width() < $element.width()) $element.css("min-width", $element.width());
-			$element.css("margin-left", "-" + $element.width() / 2 + "px");
-
-			if (this.tracUrl) this.addTracUrl();
-			else this.$(".inspector").addClass("trac-url-disabled");
+			this.checkWidth($("." + container).children(".inspector"));
+			this.checkMargin(this.$(".inspector"));
+			this.addTracUrl();
 
 			return this;
 		},
 
+		checkWidth: function($element) {
+			var elementWidth = $element.width();
+ 
+			if (this.$el.width() < elementWidth) $element.css("min-width", elementWidth);
+		},
+
+		checkMargin: function($element) {
+			var minusHalfWidth = function() {
+				return "-" + $element.outerWidth() / 2 + "px";
+			};
+
+			if ($element.css("margin-left") === minusHalfWidth()) return;
+
+			$element.css({ "left": "", "margin-left": "" });
+			$element.css({ "left": "50%", "margin-left": minusHalfWidth() });
+		},
+
 		addTracUrl: function() {
+			this.tracUrl = Adapt.config.get("_inspector")._tracUrl;
+
+			if (!this.tracUrl) return this.$(".inspector").addClass("trac-url-disabled");
+
 			var title = $("<div/>").html(this.model.get("displayTitle")).text();
 			var id = this.model.get("_id");
 			var location = Adapt.location._currentId;
@@ -59,7 +77,8 @@ define(function(require) {
 			if (title) params += " " + title;
 			if (id !== location) params += " (" + locationType + " " + location + ")";
 
-			this.$(".inspector").attr("href", this.tracUrl + "/newticket?summary=" + encodeURIComponent(params));
+			this.$(".inspector").attr("href", this.tracUrl + "/newticket?summary=" +
+				encodeURIComponent(params));
 		},
 
 		onClickDisabled: function() {
@@ -100,11 +119,11 @@ define(function(require) {
 
 		showInspector: function($container) {
 			var $element = $container.children(".inspector");
-			var minusHalfWidth = "-" + $element.width() / 2 + "px";
 
-			if ($element.css("margin-left") !== minusHalfWidth) $element.css("margin-left", minusHalfWidth);
-
-			$element.off().show(0, function() { $container.addClass("inspector-visible"); });
+			this.checkMargin($element);
+			$element.off().show(0, function() {
+				$container.addClass("inspector-visible");
+			});
 		},
 
 		hideInspector: function() {
@@ -116,11 +135,11 @@ define(function(require) {
 
 	Adapt.on("app:dataReady", function() {
 		var config = Adapt.config.get("_inspector");
+		var views = [ "menu", "page", "article", "block", "component" ];
 
 		if (!config || !config._isEnabled) return;
 
-		var views = config._elementsToInspect || ["menu", "page", "article", "block", "component"];
-
+		views = config._elementsToInspect || views;
 		Adapt.on(views.join("View:postRender ") + "View:postRender", function(view) {
 			new InspectorView({ el: view.$el, model: view.model });
 		});
