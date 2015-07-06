@@ -1,5 +1,5 @@
 {{! Maintainers - Tom Greenfield }}
-<a href="#" target="_blank" class="inspector" title="{{#if _parentId}}Parent: {{_parentId}}
+<a href="#" target="_blank" class="inspector a11y-ignore" title="{{#if _parentId}}Parent: {{_parentId}}
 {{/if}}{{#if _classes}}Classes: {{_classes}}
 {{/if}}{{#if _layout}}Layout: {{_layout}}
 {{/if}}Title: {{#if title}}{{title}}{{else}}<none>{{/if}}{{#if _component}}
@@ -9,6 +9,4 @@ Correct:{{#each _items}}{{#if ../_items.[1]}}
 {{numbers @index}}.{{/if}}{{#each _options}}{{#if _isCorrect}} {{text}}{{/if}}{{/each}}{{/each}}{{/if_value_equals}}{{#if_value_equals _component "slider"}}
 Correct: {{#if _correctAnswer}}{{_correctAnswer}}{{else}}{{_correctRange._bottom}}–{{_correctRange._top}}{{/if}}{{/if_value_equals}}{{#if_value_equals _component "textinput"}}
 Correct:{{#each _items}}{{#if ../_items.[1]}}
-{{numbers @index}}.{{/if}}{{#each _answers}} {{this}}{{/each}}{{/each}}{{/if_value_equals}}" tabindex="-1">
-	{{#if _component}}{{_component}} {{/if}}{{_type}} <span class="inspector-id">{{_id}}</span>
-</a>
+{{numbers @index}}.{{/if}}{{#each _answers}} {{this}}{{/each}}{{/each}}{{/if_value_equals}}" tabindex="-1">{{#if _component}}{{_component}} {{/if}}{{_type}} <span class="inspector-id">{{_id}}</span></a>

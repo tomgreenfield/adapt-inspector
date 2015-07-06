@@ -1,15 +1,16 @@
 {
 	"name": "adapt-inspector",
-	"homepage": "https://github.com/tomgreenfield/adapt-inspector",
-	"authors": [
-		"Tom Greenfield",
-		"Daryl Hedley"
-	],
+	"version": "0.3.2",
 	"description": "An extension to inspect details of elements.",
 	"main": "/js/adapt-inspector.js",
 	"keywords": [
 		"adapt-plugin",
 		"adapt-extension"
 	],
-	"license": "GPLv3"
+	"authors": [
+		"Tom Greenfield",
+		"Daryl Hedley"
+	],
+	"license": "GPL-3.0",
+	"homepage": "https://github.com/tomgreenfield/adapt-inspector"
 }

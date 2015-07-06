@@ -1,4 +1,4 @@
-# adapt-inspector
+# Inspector
 
 An extension to inspect details of elements.
 
