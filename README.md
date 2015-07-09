@@ -8,7 +8,7 @@ An extension to inspect details of elements.
 ```json
 "_inspector": {
 	"_isEnabled": true,
-	"_tracUrl": ""
+	"_tracUrl": "",
 	"_sendTo": ""
 }
 ```
