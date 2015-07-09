@@ -1,4 +1,5 @@
 "_inspector": {
 	"_isEnabled": true,
-	"_tracUrl": ""
+	"_tracUrl": "",
+    "_sendTo":"console"
 }

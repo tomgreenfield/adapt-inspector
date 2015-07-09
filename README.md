@@ -9,10 +9,12 @@ An extension to inspect details of elements.
 "_inspector": {
 	"_isEnabled": true,
 	"_tracUrl": ""
+    "_sendTo":""
 }
 ```
 * Toggle `_isEnabled` to turn Inspector on or off.
 * Populate `_tracUrl` to make element IDs clickable to a specific Trac.
+* Populate `_sendTo` to get details  sent to "console" or "clipboard" when `_tracUrl` is not populated.
 * With [Adapt CLI](https://github.com/adaptlearning/adapt-cli) installed, run `adapt install inspector`. Alternatively, download the ZIP and extract into the src > extensions directory.
 * Run an appropriate Grunt task.
 
