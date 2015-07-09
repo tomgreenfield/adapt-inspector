@@ -21,5 +21,5 @@ An extension to inspect details of elements.
 ## Usage
 
 * Elements are annotated on hover with their types and IDs.
-* Click the element IDs to create tickets on Trac.
+* Click the element IDs to create tickets on Trac or when `_tracUrl` is empty and `_sendTo` has correct value to send details to console or clipboard.
 * Roll over the IDs for tooltips containing additional details.
