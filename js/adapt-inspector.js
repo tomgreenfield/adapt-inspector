@@ -43,7 +43,7 @@ define(function(require) {
 			this.checkMargin(this.$(".inspector"));
 			this.addTracUrl();
 
-            this.sendTo = Adapt.config.get("_inspector")._sendTo;
+			this.sendTo = Adapt.config.get("_inspector")._sendTo;
             
 			return this;
 		},
@@ -64,7 +64,7 @@ define(function(require) {
 			$element.css({ "left": "", "margin-left": "" });
 			$element.css({ "left": "50%", "margin-left": minusHalfWidth() });
 		},
-        getTracDetails: function(){
+		getTracDetails: function(){
 			var title = $("<div/>").html(this.model.get("displayTitle")).text();
 			var id = this.model.get("_id");
             
@@ -75,23 +75,23 @@ define(function(require) {
 			if (title) params += " " + title;
 			if (id !== location) params += " (" + locationType + " " + location + ")";
             
-            params +=  ", path:"+this.getIdPath();
+			params +=  ", path:"+this.getIdPath();
             
-            return params;
-        },
-        getIdPath: function (){
-            var model = this.model;
-            var ids = [];
-            while(model != null) {
-                ids.unshift(model.get("_id"));
-                if(model.get("_type") === "course") break;//end of journey
-                model = model.getParent();
-            }
-            return ids.join(" > ");
-        },
-        copyToClipboard: function(text) {
-            window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
-        },
+			return params;
+		},
+		getIdPath: function (){
+			var model = this.model;
+			var ids = [];
+			while(model != null) {
+				ids.unshift(model.get("_id"));
+				if(model.get("_type") === "course") break;//end of journey
+				model = model.getParent();
+			}
+			return ids.join(" > ");
+		},
+		copyToClipboard: function(text) {
+			window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+		},
 		addTracUrl: function() {
 			this.tracUrl = Adapt.config.get("_inspector")._tracUrl;
 
@@ -104,18 +104,18 @@ define(function(require) {
 		},
 
 		onClickDisabled: function() {
-            try {
-                if(!this.sendTo || this.sendTo == "") return false;
+			try {
+				if(!this.sendTo || this.sendTo == "") return false;
                 
-                var details = this.getTracDetails();
+				var details = this.getTracDetails();
                 
-                if(this.sendTo == "console") {
-                    console.log(details);
-                }
-                else if(this.sendTo == "clipboard"){
-                    this.copyToClipboard(details);
-                }
-            } catch(e){ console.error(e); }
+				if(this.sendTo == "console") {
+					console.log(details);
+				}
+				else if(this.sendTo == "clipboard"){
+					this.copyToClipboard(details);
+				}
+			} catch(e){ console.error(e); }
             
 			return false;
 		},
