@@ -9,7 +9,7 @@ An extension to inspect details of elements.
 "_inspector": {
 	"_isEnabled": true,
 	"_tracUrl": ""
-    "_sendTo":""
+	"_sendTo": ""
 }
 ```
 * Toggle `_isEnabled` to turn Inspector on or off.
