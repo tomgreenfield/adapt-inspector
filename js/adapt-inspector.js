@@ -9,140 +9,122 @@ define(function(require) {
 	var Adapt = require("coreJS/adapt");
 	var InspectorView = Backbone.View.extend({
 
-		containers: [],
+		ids: [],
 
 		initialize: function() {
+			var id = this.model.get("_id");
+
 			this.listenTo(Adapt, "remove", this.remove);
-			this.listenTo(Adapt, "device:resize", function() {
-				this.checkMargin(this.$el.children(".inspector"));
-			});
-			this.render();
+			this.listenTo(Adapt, "device:resize", this.onHover);
+			this.ids.push(id);
+			this.addTracUrl(id);
+			this.$el.attr("data-id", id).data(this.model);
 		},
 
 		events: function() {
-			var events = { "click .trac-url-disabled": "onClickDisabled" };
-
-			if (!Adapt.device.touch) {
-				events.mouseenter = "onEnter";
-				events.mouseleave = "onLeave";
-			} else {
-				events.touchend = "onTouch";
-			}
-
-			return events;
+			return !Adapt.device.touch ?
+				{ "mouseenter": "onHover", "mouseleave": "onHover" } :
+				{ "touchend": "onTouch" };
 		},
 
-		render: function() {
-			var template = Handlebars.templates.inspector;
-			var data = this.model.toJSON();
-			var container = "inspector-container-" + this.model.get("_id");
+		addTracUrl: function(id) {
+			var tracUrl = Adapt.config.get("_inspector")._tracUrl;
 
-			this.containers.push(container);
-			this.$el.append(template(data)).addClass(container);
-			this.checkWidth($("." + container).children(".inspector"));
-			this.checkMargin(this.$(".inspector"));
-			this.addTracUrl();
-
-			return this;
-		},
-
-		checkWidth: function($element) {
-			var elementWidth = $element.width();
- 
-			if (this.$el.width() < elementWidth) $element.css("min-width", elementWidth);
-		},
-
-		checkMargin: function($element) {
-			var minusHalfWidth = function() {
-				return "-" + $element.outerWidth() / 2 + "px";
-			};
-
-			if ($element.css("margin-left") === minusHalfWidth()) return;
-
-			$element.css({ "left": "", "margin-left": "" });
-			$element.css({ "left": "50%", "margin-left": minusHalfWidth() });
-		},
-
-		addTracUrl: function() {
-			this.tracUrl = Adapt.config.get("_inspector")._tracUrl;
-
-			if (!this.tracUrl) return this.$(".inspector").addClass("trac-url-disabled");
+			if (!tracUrl) return;
 
 			var title = $("<div/>").html(this.model.get("displayTitle")).text();
-			var id = this.model.get("_id");
+			var params = id;
 			var location = Adapt.location._currentId;
 			var locationType = Adapt.location._contentType;
-			var params = id;
 			
 			if (title) params += " " + title;
 			if (id !== location) params += " (" + locationType + " " + location + ")";
 
-			this.$(".inspector").attr("href", this.tracUrl + "/newticket?summary=" +
+			this.model.set("_tracUrl", tracUrl + "/newticket?summary=" +
 				encodeURIComponent(params));
 		},
 
-		onClickDisabled: function() {
-			return false;
-		},
-
-		onEnter: function() {
-			this.$el.addClass("inspector-active");
-			this.setVisibility();
-		},
-
-		onLeave: function() {
-			this.$el.removeClass("inspector-active");
-			this.setVisibility();
+		onHover: function() {
+			_.defer(_.bind(this.setVisibility, this));
 		},
 
 		onTouch: function(event) {
 			event.stopPropagation();
 
-			var $element = this.$(".inspector");
+			if ($(event.target).is("[class*=inspector-]")) return;
 
-			if (this.tracUrl) $element.removeClass("trac-url-disabled");
-			if (this.$el.hasClass("inspector-visible")) return;
-
-			$element.addClass("trac-url-disabled");
-			this.hideInspector();
-			this.showInspector(this.$el);
+			_.defer(_.bind(function() { this.updateInspector(this.$el); }, this));
 		},
 
 		setVisibility: function() {
-			this.hideInspector();
-			for (var i = this.containers.length - 1; i >= 0; --i) {
-				var $container = $("." + this.containers[i] + ".inspector-active:hover");
+			var $inspectorHover = $(".inspector:hover");
 
-				if ($container.length > 0) return this.showInspector($container);
+			if ($inspectorHover.length > 0) {
+				return $inspectorHover.one("mouseleave", _.bind(this.onHover, this));
 			}
+
+			for (var i = this.ids.length - 1; i >= 0; --i) {
+				var $hovered = $("[data-id='" + this.ids[i] + "']:hover");
+
+				if ($hovered.length > 0) return this.updateInspector($hovered);
+			}
+
+			$(".inspector-visible").removeClass("inspector-visible");
+			$(".inspector").hide();
 		},
 
-		showInspector: function($container) {
-			var $element = $container.children(".inspector");
+		updateInspector: function($hovered) {
+			if ($hovered.hasClass("inspector-visible")) return;
 
-			this.checkMargin($element);
-			$element.off().show(0, function() {
-				$container.addClass("inspector-visible");
+			var template = Handlebars.templates.inspector;
+			var data = $hovered.data().toJSON();
+
+			this.$inspector = $(template(data)).replaceAll($(".inspector"));
+			this.positionInspector($hovered);
+		},
+
+		positionInspector: function($hovered) {
+			var offset = $hovered.offset();
+			var inspectorHeight = this.getComputed("height");
+			var $arrow = $(".inspector-arrow");
+			var arrowHeight = $arrow.outerHeight() / 2;
+			var inspectorWidth = this.getComputed("width");
+
+			$(".inspector-visible").removeClass("inspector-visible");
+			$hovered.addClass("inspector-visible");
+
+			this.$inspector.css({
+				"top": offset.top - inspectorHeight - arrowHeight,
+				"left": offset.left + $hovered.width() / 2 - inspectorWidth / 2,
+				"width": inspectorWidth,
+				"height": inspectorHeight + arrowHeight
 			});
+			$arrow.css("top", inspectorHeight);
 		},
 
-		hideInspector: function() {
-			$(".inspector").on("transitionend", function() { $(this).hide(); });
-			$("[class*='inspector-container']").removeClass("inspector-visible");
+		getComputed: function(property) {
+			return typeof getComputedStyle !== "undefined" ?
+				parseFloat(getComputedStyle(this.$inspector[0])[property]) :
+				this.$inspector[property]();
 		}
 
 	});
 
 	Adapt.on("app:dataReady", function() {
 		var config = Adapt.config.get("_inspector");
-		var views = [ "menu", "page", "article", "block", "component" ];
 
 		if (!config || !config._isEnabled) return;
 
-		views = config._elementsToInspect || views;
-		Adapt.on(views.join("View:postRender ") + "View:postRender", function(view) {
-			new InspectorView({ el: view.$el, model: view.model });
-		});
+		var views = config._elementsToInspect ||
+			[ "menu", "page", "article", "block", "component" ];
+
+		Adapt
+			.on(views.join("View:postRender ") + "View:postRender", function(view) {
+				new InspectorView({ el: view.$el, model: view.model });
+			})
+			.on("menuView:ready pageView:ready", function(view) {
+				$("<div/>").addClass("inspector").appendTo(view.$el);
+			});
 	});
 
 });
