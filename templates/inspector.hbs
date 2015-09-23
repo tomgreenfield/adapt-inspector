@@ -1,6 +1,4 @@
-{{! Maintainers - Tom Greenfield }}
-<div class="inspector">
-	<{{#if _tracUrl}}a href="{{_tracUrl}}" target="_blank"{{else}}div{{/if}} class="inspector-inner a11y-ignore" title="{{#if _parentId}}Parent: {{_parentId}}
+<{{#if _tracUrl}}a href="{{_tracUrl}}" target="_blank"{{else}}div{{/if}} class="inspector-inner a11y-ignore" title="{{#if _parentId}}Parent: {{_parentId}}
 {{/if}}{{#if _classes}}Classes: {{_classes}}
 {{/if}}{{#if _layout}}Layout: {{_layout}}
 {{/if}}Title: {{#if title}}{{title}}{{else}}<none>{{/if}}{{#if _component}}
@@ -12,5 +10,4 @@ Correct: {{#if _correctAnswer}}{{_correctAnswer}}{{else}}{{_correctRange._bottom
 Correct:{{#if _answers}}{{#each _answers}}
 {{#each this}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{/each}}{{else}}{{#each _items}}{{#if ../_items.[1]}}
 {{numbers @index}}.{{/if}} {{#each _answers}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{/each}}{{/if}}{{/if_value_equals}}" tabindex="-1">{{#if _component}}{{_component}} {{/if}}{{_type}} <span class="inspector-id">{{_id}}</span></{{#if _tracUrl}}a{{else}}div{{/if}}>
-	<div class="inspector-arrow"></div>
-</div>
+<div class="inspector-arrow"></div>
