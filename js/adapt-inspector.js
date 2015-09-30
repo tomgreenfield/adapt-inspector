@@ -143,6 +143,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		var config = Adapt.config.get("_inspector");
 
 		if (!config || !config._isEnabled) return;
+		if (Adapt.device.touch && config._disableOnTouch) return;
 
 		var views = config._elementsToInspect ||
 			[ "menu", "page", "article", "block", "component" ];
