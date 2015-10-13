@@ -30,12 +30,12 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		},
 
 		setVisibility: function() {
-			if ($(".inspector:hover").length > 0) return;
+			if ($(".inspector:hover").length) return;
 
 			for (var i = this.ids.length - 1; i >= 0; --i) {
 				var $hovered = $("[data-id='" + this.ids[i] + "']:hover");
 
-				if ($hovered.length > 0) return this.updateInspector($hovered);
+				if ($hovered.length) return this.updateInspector($hovered);
 			}
 
 			$(".inspector-visible").removeClass("inspector-visible");
@@ -46,18 +46,37 @@ define([ "coreJS/adapt" ], function(Adapt) {
 			if ($hovered.hasClass("inspector-visible")) return;
 
 			var template = Handlebars.templates.inspector;
-			var data = $hovered.data().toJSON();
+			var data = [];
 
-			this.$el.html(template(data)).removeAttr("style");
 			$(".inspector-visible").removeClass("inspector-visible");
-			$hovered.addClass("inspector-visible");
+			this.addOverlappedElements($hovered).each(function() {
+				data.push($(this).data().toJSON());
+			}).addClass("inspector-visible");
+			this.$el.html(template(data)).removeAttr("style");
 			this.positionInspector($hovered);
+		},
+
+		addOverlappedElements: function($hovered) {
+			var checkOverlap = function() {
+				var $element = $(this);
+				var isOverlapped = $element.height() &&
+					_.isEqual($element.offset(), $hovered.offset()) &&
+					$element.width() === $hovered.width();
+
+				if (isOverlapped) $hovered = $hovered.add($element);
+			};
+
+			for (var i = this.ids.length - 1; i >= 0; --i) {
+				$("[data-id='" + this.ids[i] + "']").each(checkOverlap);
+			}
+
+			return $hovered;
 		},
 
 		positionInspector: function($hovered) {
 			var offset = $hovered.offset();
 			var inspectorHeight = this.getComputed("height");
-			var $arrow = this.$el.children(".inspector-arrow");
+			var $arrow = this.$(".inspector-arrow");
 			var arrowHeight = $arrow.outerHeight() / 2;
 			var inspectorWidth = this.getComputed("width");
 
@@ -67,7 +86,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 				width: inspectorWidth,
 				height: inspectorHeight + arrowHeight
 			});
-			$arrow.css("top", inspectorHeight);
+			$arrow.css("top", Math.floor(inspectorHeight));
 		},
 
 		getComputed: function(property) {
@@ -81,12 +100,14 @@ define([ "coreJS/adapt" ], function(Adapt) {
 
 			if (!$hovered.length) return;
 
-			this.$el.removeAttr("style");
-			this.positionInspector($hovered);
+			$hovered.removeClass("inspector-visible");
+
+			if (!Adapt.device.touch) this.setVisibility();
+			else this.updateInspector($hovered.last());
 		},
 
 		onLeave: function() {
-			_.defer(function() { Adapt.trigger("inspector:hover"); });
+			if (!Adapt.device.touch) this.setVisibility();
 		}
 
 	});
@@ -117,7 +138,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 			var params = id;
 			var location = Adapt.location._currentId;
 			var locationType = Adapt.location._contentType;
-			
+
 			if (title) params += " " + title;
 			if (id !== location) params += " (" + locationType + " " + location + ")";
 
@@ -133,7 +154,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 			event.stopPropagation();
 
 			if (!$(event.target).is("[class*=inspector-]")) {
-				_.defer(Adapt.trigger("inspector:touch", this.$el));
+				Adapt.trigger("inspector:touch", this.$el);
 			}
 		}
 
