@@ -42,7 +42,7 @@
                   "inputType": "Text",
                   "validators": [],
                   "help": "If you wish to use the inspector with TRAC, enter the TRAC URL here."
-                },
+                }
               }
             }
           }
