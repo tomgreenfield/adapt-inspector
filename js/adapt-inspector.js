@@ -43,6 +43,8 @@ define(function(require) {
 			this.checkMargin(this.$(".inspector"));
 			this.addTracUrl();
 
+			this.sendTo = Adapt.config.get("_inspector")._sendTo;
+            
 			return this;
 		},
 
@@ -62,26 +64,59 @@ define(function(require) {
 			$element.css({ "left": "", "margin-left": "" });
 			$element.css({ "left": "50%", "margin-left": minusHalfWidth() });
 		},
-
-		addTracUrl: function() {
-			this.tracUrl = Adapt.config.get("_inspector")._tracUrl;
-
-			if (!this.tracUrl) return this.$(".inspector").addClass("trac-url-disabled");
-
+		getTracDetails: function(){
 			var title = $("<div/>").html(this.model.get("displayTitle")).text();
 			var id = this.model.get("_id");
+            
 			var location = Adapt.location._currentId;
 			var locationType = Adapt.location._contentType;
 			var params = id;
 			
 			if (title) params += " " + title;
 			if (id !== location) params += " (" + locationType + " " + location + ")";
+            
+			params +=  ", path:"+this.getIdPath();
+            
+			return params;
+		},
+		getIdPath: function (){
+			var model = this.model;
+			var ids = [];
+			while(model != null) {
+				ids.unshift(model.get("_id"));
+				if(model.get("_type") === "course") break;//end of journey
+				model = model.getParent();
+			}
+			return ids.join(" > ");
+		},
+		copyToClipboard: function(text) {
+			window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+		},
+		addTracUrl: function() {
+			this.tracUrl = Adapt.config.get("_inspector")._tracUrl;
+
+			if (!this.tracUrl) return this.$(".inspector").addClass("trac-url-disabled");
+
+                var details = this.getTracDetails();
 
 			this.$(".inspector").attr("href", this.tracUrl + "/newticket?summary=" +
-				encodeURIComponent(params));
+				encodeURIComponent(details));
 		},
 
 		onClickDisabled: function() {
+			try {
+				if(!this.sendTo || this.sendTo == "") return false;
+                
+				var details = this.getTracDetails();
+                
+				if(this.sendTo == "console") {
+					console.log(details);
+				}
+				else if(this.sendTo == "clipboard"){
+					this.copyToClipboard(details);
+				}
+			} catch(e){ console.error(e); }
+            
 			return false;
 		},
 
