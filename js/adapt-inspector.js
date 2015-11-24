@@ -50,7 +50,9 @@ define([ "coreJS/adapt" ], function(Adapt) {
 
 			$(".inspector-visible").removeClass("inspector-visible");
 			this.addOverlappedElements($hovered).each(function() {
-				data.push($(this).data().toJSON());
+				var model = $(this).data();
+
+				if (model.toJSON) data.push(model.toJSON());
 			}).addClass("inspector-visible");
 			this.$el.html(template(data)).removeAttr("style");
 			this.positionInspector($hovered);
@@ -86,6 +88,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 				width: inspectorWidth,
 				height: inspectorHeight + arrowHeight
 			});
+
 			$arrow.css("top", Math.floor(inspectorHeight));
 		},
 
