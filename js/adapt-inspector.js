@@ -2,19 +2,18 @@ define([ "coreJS/adapt" ], function(Adapt) {
 
 	var InspectorView = Backbone.View.extend({
 
-		tagName: "div",
-
 		className: "inspector",
 
 		ids: [],
 
 		initialize: function() {
-			this.listenTo(Adapt, "inspector:id", this.pushId);
-			this.listenTo(Adapt, "inspector:hover", this.setVisibility);
-			this.listenTo(Adapt, "inspector:touch", this.updateInspector);
-			this.listenTo(Adapt, "device:resize", this.onResize);
-			this.listenTo(Adapt, "remove", this.remove);
-			this.render();
+			this.listenTo(Adapt, {
+				"inspector:id": this.pushId,
+				"inspector:hover": this.setVisibility,
+				"inspector:touch": this.updateInspector,
+				"device:resize": this.onResize,
+				"remove": this.remove
+			}).render();
 		},
 
 		events: {
@@ -45,16 +44,19 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		updateInspector: function($hovered) {
 			if ($hovered.hasClass("inspector-visible")) return;
 
-			var template = Handlebars.templates.inspector;
 			var data = [];
 
 			$(".inspector-visible").removeClass("inspector-visible");
 			this.addOverlappedElements($hovered).each(function() {
-				var model = $(this).data();
+				var $element = $(this);
+				var attributes = $element.data().attributes;
 
-				if (model.toJSON) data.push(model.toJSON());
-			}).addClass("inspector-visible");
-			this.$el.html(template(data)).removeAttr("style");
+				if (!attributes) return;
+
+				data.push(attributes);
+				$element.addClass("inspector-visible");
+			});
+			this.$el.html(Handlebars.templates.inspector(data)).removeAttr("style");
 			this.positionInspector($hovered);
 		},
 
@@ -94,7 +96,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 
 		getComputed: function(property) {
 			return typeof getComputedStyle !== "undefined" ?
-				parseFloat(getComputedStyle(this.$el[0])[property]) :
+				parseFloat(getComputedStyle(this.$el[0])[property], 10) :
 				this.$el[property]();
 		},
 
@@ -120,8 +122,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		initialize: function() {
 			var id = this.model.get("_id");
 
-			this.listenTo(Adapt, "remove", this.remove);
-			this.addTracUrl(id);
+			this.listenTo(Adapt, "remove", this.remove).addTracUrl(id);
 			this.$el.attr("data-id", id).data(this.model);
 			Adapt.trigger("inspector:id", id);
 		},
@@ -139,14 +140,15 @@ define([ "coreJS/adapt" ], function(Adapt) {
 
 			var title = $("<div/>").html(this.model.get("displayTitle")).text();
 			var params = id;
-			var location = Adapt.location._currentId;
-			var locationType = Adapt.location._contentType;
+			var adaptLocation = Adapt.location;
+			var location = adaptLocation._currentId;
+			var locationType = adaptLocation._contentType;
 
 			if (title) params += " " + title;
 			if (id !== location) params += " (" + locationType + " " + location + ")";
 
-			this.model.set("_tracUrl", tracUrl + "/newticket?summary=" +
-				encodeURIComponent(params));
+			tracUrl += "/newticket?summary=" + encodeURIComponent(params);
+			this.model.set("_tracUrl", tracUrl);
 		},
 
 		onHover: function() {
@@ -156,6 +158,8 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		onTouch: function(event) {
 			event.stopPropagation();
 
+			$("#wrapper").trigger(jQuery.Event("touchend"));
+
 			if (!$(event.target).is("[class*=inspector-]")) {
 				Adapt.trigger("inspector:touch", this.$el);
 			}
@@ -163,7 +167,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 
 	});
 
-	Adapt.on("app:dataReady", function() {
+	Adapt.once("app:dataReady", function() {
 		var config = Adapt.config.get("_inspector");
 
 		if (!config || !config._isEnabled) return;

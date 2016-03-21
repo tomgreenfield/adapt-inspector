@@ -1,66 +1,55 @@
 {
-  "type":"object",
+  "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema",
   "id": "http://jsonschema.net",
-  "required":false,
-  "properties":{
+  "properties": {
     "pluginLocations": {
-      "type":"object",
-      "required":true,
-      "properties":{
+      "type": "object",
+      "properties": {
         "config": {
-          "type":"object",
-          "properties":{
+          "type": "object",
+          "properties": {
             "_inspector": {
-              "type":"object",
-              "required":false,
+              "type": "object",
               "legend": "Inspector",
-              "properties":{
-                "_isEnabled": {
-                  "type":"boolean",
-                  "required":true,
-                  "default": "true",
-                  "title":"Is Enabled",
-                  "inputType": {"type": "Boolean", "options": [true, false]},
-                  "validators": [],
-                  "help": "Set to true to activate this extension, false to deactivate it."
+              "properties": {
+                "_elementsToInspect": {
+                  "type": "array",
+                  "default": [
+                    "menu",
+                    "page",
+                    "article",
+                    "block",
+                    "component"
+                  ],
+                  "title": "Elements to inspect",
+                  "inputType": "List",
+                  "help": "List the rendered views which should be inspectable (default: menu, page, article, block, component)"
                 },
-		"_disableOnTouch": {
-                  "type":"boolean",
-                  "required":false,
-                  "default": "false",
-                  "title":"Disable on touch devices?",
-                  "inputType": {"type": "Boolean", "options": [true, false]},
-                  "validators": [],
-                  "help": "Set to true to deactivate the extension on touchscreen devices"
-                },
-		"_tracUrl": {
-                  "type":"string",
-                  "required":false,
-                  "default": "true",
-                  "title":"TRAC URL",
+                "_tracUrl": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Trac URL",
                   "inputType": "Text",
-                  "validators": [],
-                  "help": "If you wish to use the inspector with TRAC, enter the TRAC URL here."
+                  "help": "Enter a URL to make Inspector link to a specific Trac"
+                },
+                "_disableOnTouch": {
+                  "type": "boolean",
+                  "default": false,
+                  "title": "Disable on touch",
+                  "inputType": "Checkbox",
+                  "help": "Disable Inspector on touch devices"
+                },
+                "_isEnabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "title": "Is enabled",
+                  "inputType": "Checkbox",
+                  "help": "Enable Inspector globally"
                 }
               }
             }
           }
-        },
-        "course": {
-          "type":"object"
-        },
-        "contentobject": {
-          "type":"object"
-        },
-        "article": {
-          "type":"object"
-        },
-        "block": {
-          "type":"object"
-        },
-        "component": {
-          "type":"object"
         }
       }
     }
