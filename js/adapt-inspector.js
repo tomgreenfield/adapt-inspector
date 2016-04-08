@@ -1,147 +1,185 @@
-/*
-* Inspector
-* License - https://github.com/adaptlearning/adapt_framework/blob/master/LICENSE
-* Maintainers - Tom Greenfield
-*/
+define([ "coreJS/adapt" ], function(Adapt) {
 
-define(function(require) {
-
-	var Adapt = require("coreJS/adapt");
 	var InspectorView = Backbone.View.extend({
 
-		containers: [],
+		className: "inspector",
+
+		ids: [],
 
 		initialize: function() {
-			this.listenTo(Adapt, "remove", this.remove);
-			this.listenTo(Adapt, "device:resize", function() {
-				this.checkMargin(this.$el.children(".inspector"));
-			});
-			this.render();
+			this.listenTo(Adapt, {
+				"inspector:id": this.pushId,
+				"inspector:hover": this.setVisibility,
+				"inspector:touch": this.updateInspector,
+				"device:resize": this.onResize,
+				"remove": this.remove
+			}).render();
 		},
 
-		events: function() {
-			var events = { "click .trac-url-disabled": "onClickDisabled" };
-
-			if (!Adapt.device.touch) {
-				events.mouseenter = "onEnter";
-				events.mouseleave = "onLeave";
-			} else {
-				events.touchend = "onTouch";
-			}
-
-			return events;
+		events: {
+			"mouseleave": "onLeave"
 		},
 
 		render: function() {
-			var template = Handlebars.templates.inspector;
-			var data = this.model.toJSON();
-			var container = "inspector-container-" + this.model.get("_id");
-
-			this.containers.push(container);
-			this.$el.append(template(data)).addClass(container);
-			this.checkWidth($("." + container).children(".inspector"));
-			this.checkMargin(this.$(".inspector"));
-			this.addTracUrl();
-
-			return this;
+			$("#wrapper").append(this.$el);
 		},
 
-		checkWidth: function($element) {
-			var elementWidth = $element.width();
- 
-			if (this.$el.width() < elementWidth) $element.css("min-width", elementWidth);
+		pushId: function(id) {
+			this.ids.push(id);
 		},
 
-		checkMargin: function($element) {
-			var minusHalfWidth = function() {
-				return "-" + $element.outerWidth() / 2 + "px";
+		setVisibility: function() {
+			if ($(".inspector:hover").length) return;
+
+			for (var i = this.ids.length - 1; i >= 0; --i) {
+				var $hovered = $("[data-id='" + this.ids[i] + "']:hover");
+
+				if ($hovered.length) return this.updateInspector($hovered);
+			}
+
+			$(".inspector-visible").removeClass("inspector-visible");
+			this.$el.hide();
+		},
+
+		updateInspector: function($hovered) {
+			if ($hovered.hasClass("inspector-visible")) return;
+
+			var data = [];
+
+			$(".inspector-visible").removeClass("inspector-visible");
+			this.addOverlappedElements($hovered).each(function() {
+				var $element = $(this);
+				var attributes = $element.data().attributes;
+
+				if (!attributes) return;
+
+				data.push(attributes);
+				$element.addClass("inspector-visible");
+			});
+			this.$el.html(Handlebars.templates.inspector(data)).removeAttr("style");
+			this.positionInspector($hovered);
+		},
+
+		addOverlappedElements: function($hovered) {
+			var checkOverlap = function() {
+				var $element = $(this);
+				var isOverlapped = $element.height() &&
+					_.isEqual($element.offset(), $hovered.offset()) &&
+					$element.width() === $hovered.width();
+
+				if (isOverlapped) $hovered = $hovered.add($element);
 			};
 
-			if ($element.css("margin-left") === minusHalfWidth()) return;
+			for (var i = this.ids.length - 1; i >= 0; --i) {
+				$("[data-id='" + this.ids[i] + "']").each(checkOverlap);
+			}
 
-			$element.css({ "left": "", "margin-left": "" });
-			$element.css({ "left": "50%", "margin-left": minusHalfWidth() });
+			return $hovered;
 		},
 
-		addTracUrl: function() {
-			this.tracUrl = Adapt.config.get("_inspector")._tracUrl;
+		positionInspector: function($hovered) {
+			var offset = $hovered.offset();
+			var inspectorHeight = this.getComputed("height");
+			var $arrow = this.$(".inspector-arrow");
+			var arrowHeight = $arrow.outerHeight() / 2;
+			var inspectorWidth = this.getComputed("width");
 
-			if (!this.tracUrl) return this.$(".inspector").addClass("trac-url-disabled");
+			this.$el.css({
+				top: offset.top - inspectorHeight - arrowHeight,
+				left: offset.left + $hovered.width() / 2 - inspectorWidth / 2,
+				width: inspectorWidth,
+				height: inspectorHeight + arrowHeight
+			});
 
-			var title = $("<div/>").html(this.model.get("displayTitle")).text();
-			var id = this.model.get("_id");
-			var location = Adapt.location._currentId;
-			var locationType = Adapt.location._contentType;
-			var params = id;
-			
-			if (title) params += " " + title;
-			if (id !== location) params += " (" + locationType + " " + location + ")";
-
-			this.$(".inspector").attr("href", this.tracUrl + "/newticket?summary=" +
-				encodeURIComponent(params));
+			$arrow.css("top", Math.floor(inspectorHeight));
 		},
 
-		onClickDisabled: function() {
-			return false;
+		getComputed: function(property) {
+			return typeof getComputedStyle !== "undefined" ?
+				parseFloat(getComputedStyle(this.$el[0])[property], 10) :
+				this.$el[property]();
 		},
 
-		onEnter: function() {
-			this.$el.addClass("inspector-active");
-			this.setVisibility();
+		onResize: function() {
+			var $hovered = $(".inspector-visible");
+
+			if (!$hovered.length) return;
+
+			$hovered.removeClass("inspector-visible");
+
+			if (!Adapt.device.touch) this.setVisibility();
+			else this.updateInspector($hovered.last());
 		},
 
 		onLeave: function() {
-			this.$el.removeClass("inspector-active");
-			this.setVisibility();
+			if (!Adapt.device.touch) this.setVisibility();
+		}
+
+	});
+
+	var InspectorContainerView = Backbone.View.extend({
+
+		initialize: function() {
+			var id = this.model.get("_id");
+
+			this.listenTo(Adapt, "remove", this.remove).addTracUrl(id);
+			this.$el.attr("data-id", id).data(this.model);
+			Adapt.trigger("inspector:id", id);
+		},
+
+		events: function() {
+			return !Adapt.device.touch ?
+				{ "mouseenter": "onHover", "mouseleave": "onHover" } :
+				{ "touchend": "onTouch" };
+		},
+
+		addTracUrl: function(id) {
+			var tracUrl = Adapt.config.get("_inspector")._tracUrl;
+
+			if (!tracUrl) return;
+
+			var title = $("<div/>").html(this.model.get("displayTitle")).text();
+			var params = id;
+			var adaptLocation = Adapt.location;
+			var location = adaptLocation._currentId;
+			var locationType = adaptLocation._contentType;
+
+			if (title) params += " " + title;
+			if (id !== location) params += " (" + locationType + " " + location + ")";
+
+			tracUrl += "/newticket?summary=" + encodeURIComponent(params);
+			this.model.set("_tracUrl", tracUrl);
+		},
+
+		onHover: function() {
+			_.defer(function() { Adapt.trigger("inspector:hover"); });
 		},
 
 		onTouch: function(event) {
 			event.stopPropagation();
 
-			var $element = this.$(".inspector");
+			$("#wrapper").trigger(jQuery.Event("touchend"));
 
-			if (this.tracUrl) $element.removeClass("trac-url-disabled");
-			if (this.$el.hasClass("inspector-visible")) return;
-
-			$element.addClass("trac-url-disabled");
-			this.hideInspector();
-			this.showInspector(this.$el);
-		},
-
-		setVisibility: function() {
-			this.hideInspector();
-			for (var i = this.containers.length - 1; i >= 0; --i) {
-				var $container = $("." + this.containers[i] + ".inspector-active:hover");
-
-				if ($container.length > 0) return this.showInspector($container);
+			if (!$(event.target).is("[class*=inspector-]")) {
+				Adapt.trigger("inspector:touch", this.$el);
 			}
-		},
-
-		showInspector: function($container) {
-			var $element = $container.children(".inspector");
-
-			this.checkMargin($element);
-			$element.off().show(0, function() {
-				$container.addClass("inspector-visible");
-			});
-		},
-
-		hideInspector: function() {
-			$(".inspector").on("transitionend", function() { $(this).hide(); });
-			$("[class*='inspector-container']").removeClass("inspector-visible");
 		}
 
 	});
 
-	Adapt.on("app:dataReady", function() {
+	Adapt.once("app:dataReady", function() {
 		var config = Adapt.config.get("_inspector");
-		var views = [ "menu", "page", "article", "block", "component" ];
 
 		if (!config || !config._isEnabled) return;
+		if (Adapt.device.touch && config._disableOnTouch) return;
 
-		views = config._elementsToInspect || views;
-		Adapt.on(views.join("View:postRender ") + "View:postRender", function(view) {
-			new InspectorView({ el: view.$el, model: view.model });
+		var views = config._elementsToInspect ||
+			[ "menu", "page", "article", "block", "component" ];
+
+		Adapt.on("router:location", function() {
+			new InspectorView();
+		}).on(views.join("View:postRender ") + "View:postRender", function(view) {
+			new InspectorContainerView({ el: view.$el, model: view.model });
 		});
 	});
 

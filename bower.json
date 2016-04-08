@@ -1,7 +1,11 @@
 {
 	"name": "adapt-inspector",
-	"version": "0.3.2",
-	"description": "An extension to inspect details of elements.",
+	"version": "0.5.2",
+	"framework": ">=1.1",
+	"displayName" : "Inspector",
+	"extension": "inspector",
+	"targetAttribute": "_inspector",
+	"description": "An extension to inspect details of elements",
 	"main": "/js/adapt-inspector.js",
 	"keywords": [
 		"adapt-plugin",
