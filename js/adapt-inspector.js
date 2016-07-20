@@ -156,7 +156,8 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		},
 
 		onTouch: function(event) {
-			event.stopPropagation();
+			if (event.originalEvent.inspectorStop) return;
+			event.originalEvent.inspectorStop = true;
 
 			$("#wrapper").trigger(jQuery.Event("touchend"));
 
