@@ -159,8 +159,6 @@ define([ "coreJS/adapt" ], function(Adapt) {
 			if (event.originalEvent.inspectorStop) return;
 			event.originalEvent.inspectorStop = true;
 
-			$("#wrapper").trigger(jQuery.Event("touchend"));
-
 			if (!$(event.target).is("[class*=inspector-]")) {
 				Adapt.trigger("inspector:touch", this.$el);
 			}
