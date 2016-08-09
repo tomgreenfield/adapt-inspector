@@ -156,8 +156,9 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		},
 
 		onTouch: function(event) {
-			if (event.originalEvent.inspectorStop) return;
-			event.originalEvent.inspectorStop = true;
+			if (event.originalEvent.stopInspectorPropagation) return;
+
+			event.originalEvent.stopInspectorPropagation = true;
 
 			if (!$(event.target).is("[class*=inspector-]")) {
 				Adapt.trigger("inspector:touch", this.$el);
