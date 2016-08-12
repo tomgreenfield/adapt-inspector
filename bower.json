@@ -2,7 +2,7 @@
 	"name": "adapt-inspector",
 	"version": "0.5.4",
 	"framework": ">=1.1",
-	"displayName" : "Inspector",
+	"displayName": "Inspector",
 	"extension": "inspector",
 	"targetAttribute": "_inspector",
 	"description": "An extension to inspect details of elements",
