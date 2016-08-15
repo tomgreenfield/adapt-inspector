@@ -87,8 +87,8 @@ define([ "coreJS/adapt" ], function(Adapt) {
 			this.$el.css({
 				top: offset.top - inspectorHeight - arrowHeight,
 				left: offset.left + $hovered.width() / 2 - inspectorWidth / 2,
-				width: inspectorWidth,
-				height: inspectorHeight + arrowHeight
+				minWidth: inspectorWidth,
+				minHeight: inspectorHeight + arrowHeight
 			});
 
 			$arrow.css("top", Math.floor(inspectorHeight));
