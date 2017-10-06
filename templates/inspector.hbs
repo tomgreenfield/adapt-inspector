@@ -1,6 +1,6 @@
 {{#each .}}
 <div class="inspector-inner">
-	<{{#if _tracUrl}}a href="{{_tracUrl}}" target="_blank"{{else}}div{{/if}} class="inspector-text a11y-ignore" title="{{#if _parentId}}Parent: {{_parentId}}
+	<{{#if _tracUrl}}a href="{{_tracUrl}}" target="_blank"{{else}}div{{/if}} class="inspector-text a11y-ignore" aria-hidden="true" title="{{#if _parentId}}Parent: {{_parentId}}
 {{/if}}{{#if _classes}}Classes: {{_classes}}
 {{/if}}{{#if _layout}}Layout: {{_layout}}
 {{/if}}Title: {{#if title}}{{title}}{{else}}<none>{{/if}}{{#if _component}}
