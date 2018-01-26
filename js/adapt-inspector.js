@@ -128,9 +128,11 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		},
 
 		events: function() {
-			return !Adapt.device.touch ?
-				{ "mouseenter": "onHover", "mouseleave": "onHover" } :
-				{ "touchend": "onTouch" };
+			var events = { "mouseenter": "onHover", "mouseleave": "onHover" };
+			if (Adapt.device.touch) {
+				events.touchend = "onTouch";
+			}
+			return events;
 		},
 
 		addTracUrl: function(id) {
