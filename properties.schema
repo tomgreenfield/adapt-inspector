@@ -34,6 +34,13 @@
                   "inputType": "Text",
                   "help": "Enter a URL to make Inspector link to a specific Trac"
                 },
+                "tracSummaryPrompt": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Trac Summary Prompt",
+                  "inputType": "Text",
+                  "help": "Prompt text to be included in the Trac 'summary' field e.g. 'Please enter a summary here'"
+                },
                 "_elementsToInspect": {
                   "type": "array",
                   "default": [

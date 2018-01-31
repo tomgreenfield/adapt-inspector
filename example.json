@@ -1,5 +1,6 @@
 "_inspector": {
 	"_isEnabled": true,
 	"_disableOnTouch": true,
-	"_tracUrl": ""
+	"_tracUrl": "",
+	"tracSummaryPrompt": "Please enter a brief summary of the issue here"
 }
