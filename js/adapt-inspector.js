@@ -137,7 +137,8 @@ define([ "core/js/adapt" ], function(Adapt) {
 		},
 
 		addTracUrl: function(id) {
-			var tracUrl = Adapt.config.get("_inspector")._tracUrl;
+			var config = Adapt.config.get("_inspector");
+			var tracUrl = config._tracUrl;
 
 			if (!tracUrl) return;
 
@@ -151,6 +152,9 @@ define([ "core/js/adapt" ], function(Adapt) {
 			if (id !== location) params += " (" + locationType + " " + location + ")";
 
 			tracUrl += "/newticket?summary=" + encodeURIComponent(params);
+			if (config.tracSummaryPrompt) {
+				tracUrl += ": " + encodeURIComponent(config.tracSummaryPrompt);
+			}
 			this.model.set("_tracUrl", tracUrl);
 		},
 
