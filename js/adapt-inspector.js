@@ -1,4 +1,4 @@
-define([ "coreJS/adapt" ], function(Adapt) {
+define([ "core/js/adapt" ], function(Adapt) {
 
 	var InspectorView = Backbone.View.extend({
 
@@ -47,6 +47,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 			var data = [];
 
 			$(".inspector-visible").removeClass("inspector-visible");
+
 			this.addOverlappedElements($hovered).each(function() {
 				var $element = $(this);
 				var attributes = $element.data().attributes;
@@ -56,6 +57,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 				data.push(attributes);
 				$element.addClass("inspector-visible");
 			});
+
 			this.$el.html(Handlebars.templates.inspector(data)).removeAttr("style");
 			this.positionInspector($hovered);
 		},
@@ -63,6 +65,7 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		addOverlappedElements: function($hovered) {
 			var checkOverlap = function() {
 				var $element = $(this);
+
 				var isOverlapped = $element.height() &&
 					_.isEqual($element.offset(), $hovered.offset()) &&
 					$element.width() === $hovered.width();
@@ -106,13 +109,11 @@ define([ "coreJS/adapt" ], function(Adapt) {
 			if (!$hovered.length) return;
 
 			$hovered.removeClass("inspector-visible");
-
-			if (!Adapt.device.touch) this.setVisibility();
-			else this.updateInspector($hovered.last());
+			this.updateInspector($hovered.last());
 		},
 
 		onLeave: function() {
-			if (!Adapt.device.touch) this.setVisibility();
+			_.defer(_.bind(this.setVisibility, this));
 		}
 
 	});
@@ -128,11 +129,11 @@ define([ "coreJS/adapt" ], function(Adapt) {
 		},
 
 		events: function() {
-			var events = { "mouseenter": "onHover", "mouseleave": "onHover" };
-			if (Adapt.device.touch) {
-				events.touchend = "onTouch";
-			}
-			return events;
+			var hash = { "mouseenter": "onHover", "mouseleave": "onHover" };
+
+			if (Adapt.device.touch) hash.touchend = "onTouch";
+
+			return hash;
 		},
 
 		addTracUrl: function(id) {
