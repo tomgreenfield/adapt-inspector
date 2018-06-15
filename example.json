@@ -1,5 +1,8 @@
 "_inspector": {
 	"_isEnabled": true,
 	"_disableOnTouch": true,
-	"_tracUrl": ""
+	"_trac": {
+		"_url": "",
+		"_setComponentToCourseId": true
+	}
 }

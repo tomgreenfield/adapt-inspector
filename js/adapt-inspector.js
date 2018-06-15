@@ -137,8 +137,9 @@ define([ "core/js/adapt" ], function(Adapt) {
 		},
 
 		addTracUrl: function(id) {
-			var tracUrl = Adapt.config.get("_inspector")._tracUrl;
+			var cfg = Adapt.config.get('_inspector');
 
+			var tracUrl = cfg._trac ? cfg._trac._url : cfg._tracUrl;
 			if (!tracUrl) return;
 
 			var title = $("<div/>").html(this.model.get("displayTitle")).text();
@@ -151,6 +152,11 @@ define([ "core/js/adapt" ], function(Adapt) {
 			if (id !== location) params += " (" + locationType + " " + location + ")";
 
 			tracUrl += "/newticket?summary=" + encodeURIComponent(params);
+
+			if (cfg._trac && cfg._trac._setComponentToCourseId) {
+				tracUrl += "&component=" + Adapt.course.get('_id');
+			}
+
 			this.model.set("_tracUrl", tracUrl);
 		},
 
