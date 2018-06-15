@@ -27,12 +27,28 @@
                   "inputType": "Checkbox",
                   "help": "Disable Inspector on touch devices"
                 },
-                "_tracUrl": {
-                  "type": "string",
-                  "default": "",
-                  "title": "Trac URL",
-                  "inputType": "Text",
-                  "help": "Enter a URL to make Inspector link to a specific Trac"
+                "_trac": {
+                  "type": "object",
+                  "required": false,
+                  "legend": "Trac integration",
+                  "properties": {
+                    "_url": {
+                      "type": "string",
+                      "required": false,
+                      "title": "Trac URL",
+                      "inputType": "Text",
+                      "help": "Enter a URL to make Inspector link to a specific Trac"
+                    },
+                    "_setComponentToCourseId": {
+                      "type": "boolean",
+                      "required": true,
+                      "default": true,
+                      "title": "Set Component to the course ID",
+                      "inputType": "Checkbox",
+                      "validators": [],
+                      "help": "Controls whether the 'Component' field in Trac will get set to the course ID or not. Note: you must configure the Component field in Trac to contain the relevant course IDs."
+                    }
+                  }
                 },
                 "_elementsToInspect": {
                   "type": "array",
