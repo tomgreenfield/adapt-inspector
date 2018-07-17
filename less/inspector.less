@@ -1,6 +1,7 @@
 .inspector {
 	position: absolute;
 	z-index: 501;
+	padding-bottom: 8px;
 	cursor: default;
 	font: 11px "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
 	text-align: center;
@@ -9,12 +10,22 @@
 .inspector-inner {
 	position: relative;
 	display: inline-block;
+	border: 1px solid #333;
+	border-radius: 3px;
+	background-color: #333;
+	&:before {
+		position: absolute;
+		bottom: 0;
+		left: 50%;
+		border: 8px solid transparent;
+		border-top-color: #333;
+		content: "";
+		transform: translate(-50%, 100%);
+	}
 }
 
 .inspector-text {
-	padding: 6px;
-	border-radius: 3px;
-	background-color: #333;
+	padding: 5px;
 	color: #3cf;
 	a& {
 		display: inline-block;
@@ -24,14 +35,6 @@
 
 .inspector-id {
 	color: #ccc;
-}
-
-.inspector-arrow {
-	position: absolute;
-	left: 50%;
-	border: 8px solid transparent;
-	border-top-color: #333;
-	margin-left: -8px;
 }
 
 .inspector-visible {

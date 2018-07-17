@@ -29,10 +29,10 @@ define([ "core/js/adapt" ], function(Adapt) {
 		},
 
 		setVisibility: function() {
-			if ($(".inspector:hover").length) return;
+			if (this.$el.is(":hover")) return;
 
 			for (var i = this.ids.length - 1; i >= 0; --i) {
-				var $hovered = $("[data-id='" + this.ids[i] + "']:hover");
+				var $hovered = $("[data-adapt-id='" + this.ids[i] + "']:hover");
 
 				if ($hovered.length) return this.updateInspector($hovered);
 			}
@@ -58,8 +58,12 @@ define([ "core/js/adapt" ], function(Adapt) {
 				$element.addClass("inspector-visible");
 			});
 
-			this.$el.html(Handlebars.templates.inspector(data)).removeAttr("style");
-			this.positionInspector($hovered);
+			var offset = $hovered.offset();
+
+			this.$el.html(Handlebars.templates.inspector(data)).css({
+				top: offset.top - this.$el.outerHeight(),
+				left: offset.left + $hovered.width() / 2 - this.$el.width() / 2,
+			}).show();
 		},
 
 		addOverlappedElements: function($hovered) {
@@ -74,33 +78,10 @@ define([ "core/js/adapt" ], function(Adapt) {
 			};
 
 			for (var i = this.ids.length - 1; i >= 0; --i) {
-				$("[data-id='" + this.ids[i] + "']").each(checkOverlap);
+				$("[data-adapt-id='" + this.ids[i] + "']").each(checkOverlap);
 			}
 
 			return $hovered;
-		},
-
-		positionInspector: function($hovered) {
-			var offset = $hovered.offset();
-			var inspectorHeight = this.getComputed("height");
-			var $arrow = this.$(".inspector-arrow");
-			var arrowHeight = $arrow.outerHeight() / 2;
-			var inspectorWidth = this.getComputed("width");
-
-			this.$el.css({
-				top: offset.top - inspectorHeight - arrowHeight,
-				left: offset.left + $hovered.width() / 2 - inspectorWidth / 2,
-				minWidth: inspectorWidth,
-				minHeight: inspectorHeight + arrowHeight
-			});
-
-			$arrow.css("top", Math.floor(inspectorHeight));
-		},
-
-		getComputed: function(property) {
-			return typeof getComputedStyle !== "undefined" ?
-				parseFloat(getComputedStyle(this.$el[0])[property], 10) :
-				this.$el[property]();
 		},
 
 		onResize: function() {
@@ -113,7 +94,7 @@ define([ "core/js/adapt" ], function(Adapt) {
 		},
 
 		onLeave: function() {
-			_.defer(_.bind(this.setVisibility, this));
+			_.defer(this.setVisibility.bind(this));
 		}
 
 	});
@@ -124,33 +105,37 @@ define([ "core/js/adapt" ], function(Adapt) {
 			var id = this.model.get("_id");
 
 			this.listenTo(Adapt, "remove", this.remove).addTracUrl(id);
-			this.$el.attr("data-id", id).data(this.model);
+			this.$el.data(this.model);
 			Adapt.trigger("inspector:id", id);
 		},
 
-		events: function() {
-			var hash = { "mouseenter": "onHover", "mouseleave": "onHover" };
-
-			if (Adapt.device.touch) hash.touchend = "onTouch";
-
-			return hash;
+		events: {
+			"mouseenter": "onHover",
+			"mouseleave": "onHover",
+			"touchend": "onTouch"
 		},
 
 		addTracUrl: function(id) {
-			var tracUrl = Adapt.config.get("_inspector")._tracUrl;
+			var config = Adapt.config.get("_inspector")._trac;
 
-			if (!tracUrl) return;
+			if (!config || !config._isEnabled) return;
 
-			var title = $("<div/>").html(this.model.get("displayTitle")).text();
-			var params = id;
-			var adaptLocation = Adapt.location;
-			var location = adaptLocation._currentId;
-			var locationType = adaptLocation._contentType;
+			var params = config._params || {
+				summary: "{{_id}}{{#if displayTitle}} {{{displayTitle}}}{{/if}}{{inspector_location}}"
+			};
 
-			if (title) params += " " + title;
-			if (id !== location) params += " (" + locationType + " " + location + ")";
+			var $div = $("<div>");
+			var data = this.model.toJSON();
+			var tracUrl = config._url + "/newticket?";
 
-			tracUrl += "/newticket?summary=" + encodeURIComponent(params);
+			for (var key in params) {
+				if (!params.hasOwnProperty(key)) continue;
+
+				var value = $div.html(Handlebars.compile(params[key])(data)).text();
+
+				tracUrl += "&" + key + "=" + encodeURIComponent(value);
+			}
+
 			this.model.set("_tracUrl", tracUrl);
 		},
 
@@ -170,18 +155,31 @@ define([ "core/js/adapt" ], function(Adapt) {
 
 	});
 
+	function getLocationString(context) {
+		var data = context.data.root;
+		var id = data.length ? data[0]._id : data._id;
+		var location = Adapt.location;
+		var locationId = location._currentId;
+		var locationType = location._contentType;
+
+		return id !== locationId ? " (" + locationType + " " + locationId + ")" : "";
+	}
+
 	Adapt.once("app:dataReady", function() {
 		var config = Adapt.config.get("_inspector");
 
 		if (!config || !config._isEnabled) return;
-		if (Adapt.device.touch && config._disableOnTouch) return;
 
 		var views = config._elementsToInspect ||
 			[ "menu", "page", "article", "block", "component" ];
 
+		var eventList = views.map(function(view) { return view + "View:postRender"; });
+
+		Handlebars.registerHelper("inspector_location", getLocationString);
+
 		Adapt.on("router:location", function() {
 			new InspectorView();
-		}).on(views.join("View:postRender ") + "View:postRender", function(view) {
+		}).on(eventList.join(" "), function(view) {
 			new InspectorContainerView({ el: view.$el, model: view.model });
 		});
 	});

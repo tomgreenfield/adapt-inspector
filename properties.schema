@@ -15,24 +15,42 @@
               "properties": {
                 "_isEnabled": {
                   "type": "boolean",
-                  "default": true,
+                  "default": false,
                   "title": "Is enabled",
                   "inputType": "Checkbox",
                   "help": "Enable Inspector globally"
                 },
-                "_disableOnTouch": {
-                  "type": "boolean",
-                  "default": false,
-                  "title": "Disable on touch",
-                  "inputType": "Checkbox",
-                  "help": "Disable Inspector on touch devices"
-                },
-                "_tracUrl": {
-                  "type": "string",
-                  "default": "",
-                  "title": "Trac URL",
-                  "inputType": "Text",
-                  "help": "Enter a URL to make Inspector link to a specific Trac"
+                "_trac": {
+                  "type": "object",
+                  "title": "Trac",
+                  "properties": {
+                    "_isEnabled": {
+                      "type": "boolean",
+                      "default": false,
+                      "title": "Is enabled",
+                      "inputType": "Checkbox",
+                      "help": "Link Inspector to Trac"
+                    },
+                    "_url": {
+                      "type": "string",
+                      "default": "",
+                      "title": "URL",
+                      "inputType": "Text",
+                      "help": "Enter the URL of the Trac instance"
+                    },
+                    "_params": {
+                      "type": "object",
+                      "default": {
+                        "summary": "{{_id}}{{#if displayTitle}} {{{displayTitle}}}{{/if}}{{inspector_location}}"
+                      },
+                      "title": "Parameters",
+                      "inputType": {
+                        "type": "CodeEditor",
+                        "mode": "json"
+                      },
+                      "help": "Define the fields to pre-populate in Trac"
+                    }
+                  }
                 },
                 "_elementsToInspect": {
                   "type": "array",
@@ -45,7 +63,7 @@
                   ],
                   "title": "Elements to inspect",
                   "inputType": "List",
-                  "help": "List the rendered views which should be inspectable (default: menu, page, article, block, component)"
+                  "help": "List the rendered views which should be inspectable"
                 }
               }
             }

@@ -1,5 +1,17 @@
 "_inspector": {
 	"_isEnabled": true,
-	"_disableOnTouch": true,
-	"_tracUrl": ""
+	"_trac": {
+		"_isEnabled": false,
+		"_url": "",
+		"_params": {
+			"summary": "{{_id}}{{#if displayTitle}} {{{displayTitle}}}{{/if}}{{inspector_location}}"
+		}
+	},
+	"_elementsToInspect": [
+		"menu",
+		"page",
+		"article",
+		"block",
+		"component"
+	]
 }
