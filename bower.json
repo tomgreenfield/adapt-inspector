@@ -1,6 +1,6 @@
 {
 	"name": "adapt-inspector",
-	"version": "0.6.0-rc.1",
+	"version": "0.6.0",
 	"framework": ">=2.0.16",
 	"displayName": "Inspector",
 	"extension": "inspector",
