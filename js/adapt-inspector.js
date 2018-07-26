@@ -62,7 +62,7 @@ define([ "core/js/adapt" ], function(Adapt) {
 
 			this.$el.html(Handlebars.templates.inspector(data)).removeAttr("style").css({
 				top: offset.top - this.$el.outerHeight(),
-				left: offset.left + $hovered.outerWidth() / 2 - this.$el.width() / 2,
+				left: offset.left + $hovered.outerWidth() / 2 - this.$el.width() / 2
 			});
 		},
 
