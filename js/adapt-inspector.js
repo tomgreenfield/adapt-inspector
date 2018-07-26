@@ -60,10 +60,10 @@ define([ "core/js/adapt" ], function(Adapt) {
 
 			var offset = $hovered.offset();
 
-			this.$el.html(Handlebars.templates.inspector(data)).css({
+			this.$el.html(Handlebars.templates.inspector(data)).removeAttr("style").css({
 				top: offset.top - this.$el.outerHeight(),
-				left: offset.left + $hovered.width() / 2 - this.$el.width() / 2,
-			}).show();
+				left: offset.left + $hovered.outerWidth() / 2 - this.$el.width() / 2,
+			});
 		},
 
 		addOverlappedElements: function($hovered) {
