@@ -45,6 +45,7 @@ define([ "core/js/adapt" ], function(Adapt) {
 			if ($hovered.hasClass("inspector-visible")) return;
 
 			var data = [];
+			var template = Handlebars.templates.inspector;
 
 			$(".inspector-visible").removeClass("inspector-visible");
 
@@ -58,12 +59,17 @@ define([ "core/js/adapt" ], function(Adapt) {
 				$element.addClass("inspector-visible");
 			});
 
-			var offset = $hovered.offset();
+			this.$el.html(template(data)).removeAttr("style").removeClass("inline");
 
-			this.$el.html(Handlebars.templates.inspector(data)).removeAttr("style").css({
-				top: offset.top - this.$el.outerHeight(),
+			var offset = $hovered.offset();
+			var offsetTop = offset.top;
+			var targetTop = offsetTop - this.$el.outerHeight();
+			var shouldBeInline = targetTop < 0;
+
+			this.$el.css({
+				top: shouldBeInline ? offsetTop : targetTop,
 				left: offset.left + $hovered.outerWidth() / 2 - this.$el.width() / 2
-			});
+			}).toggleClass("inline", shouldBeInline);
 		},
 
 		addOverlappedElements: function($hovered) {
