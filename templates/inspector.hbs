@@ -5,7 +5,7 @@
 {{/if}}{{#if _layout}}Layout: {{_layout}}
 {{/if}}Title: {{#if title}}{{title}}{{else}}<none>{{/if}}
 Optional: {{#if _isOptional}}Yes{{else}}No{{/if}}{{#if _selectable}}
-Correct:{{#each _items}}{{#if _shouldBeSelected}} {{numbers @index}}{{/if}}{{/each}}{{/if}}{{#if_value_equals _component "matching"}}
+Correct:{{#if _children.models}}{{#each _children.models}}{{#if attributes._shouldBeSelected}} {{numbers @index}}{{/if}}{{/each}}{{else}}{{#each _items}}{{#if _shouldBeSelected}} {{numbers @index}}{{/if}}{{/each}}{{/if}}{{/if}}{{#if_value_equals _component "matching"}}
 Correct:{{#each _items}}{{#if ../_items.[1]}}
 {{numbers @index}}.{{/if}}{{#each _options}}{{#if _isCorrect}} {{text}}{{/if}}{{/each}}{{/each}}{{/if_value_equals}}{{#if_value_equals _component "slider"}}
 Correct: {{#if _correctAnswer}}{{_correctAnswer}}{{else}}{{_correctRange._bottom}}–{{_correctRange._top}}{{/if}}{{/if_value_equals}}{{#if_value_equals _component "textinput"}}

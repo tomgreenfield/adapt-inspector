@@ -16,9 +16,8 @@
                 "_isEnabled": {
                   "type": "boolean",
                   "default": false,
-                  "title": "Is enabled",
-                  "inputType": "Checkbox",
-                  "help": "Enable Inspector globally"
+                  "title": "Enable Inspector",
+                  "inputType": "Checkbox"
                 },
                 "_trac": {
                   "type": "object",
@@ -27,9 +26,8 @@
                     "_isEnabled": {
                       "type": "boolean",
                       "default": false,
-                      "title": "Is enabled",
-                      "inputType": "Checkbox",
-                      "help": "Link Inspector to Trac"
+                      "title": "Link Inspector to Trac",
+                      "inputType": "Checkbox"
                     },
                     "_url": {
                       "type": "string",
