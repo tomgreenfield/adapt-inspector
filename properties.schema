@@ -54,6 +54,7 @@
                   "type": "array",
                   "default": [
                     "menu",
+                    "menuItem",
                     "page",
                     "article",
                     "block",

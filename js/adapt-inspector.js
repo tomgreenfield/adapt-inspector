@@ -177,7 +177,7 @@ define([ "core/js/adapt" ], function(Adapt) {
 		if (!config || !config._isEnabled) return;
 
 		var views = config._elementsToInspect ||
-			[ "menu", "page", "article", "block", "component" ];
+			[ "menu", "menuItem", "page", "article", "block", "component" ];
 
 		var eventList = views.map(function(view) { return view + "View:postRender"; });
 

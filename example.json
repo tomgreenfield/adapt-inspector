@@ -9,6 +9,7 @@
 	},
 	"_elementsToInspect": [
 		"menu",
+		"menuItem",
 		"page",
 		"article",
 		"block",

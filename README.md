@@ -58,6 +58,6 @@ An extension to inspect details of elements.
 		<td colspan="2"><code>_elementsToInspect</code></td>
 		<td>Array</td>
 		<td>The rendered views which should be inspectable</td>
-		<td><code>[ "menu", "page", "article", "block", "component" ]</code></td>
+		<td><code>[ "menu", "menuItem", "page", "article", "block", "component" ]</code></td>
 	</tr>
 </table>
