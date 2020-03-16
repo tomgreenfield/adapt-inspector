@@ -42,12 +42,14 @@ define([ "core/js/adapt" ], function(Adapt) {
 		},
 
 		updateInspector: function($hovered) {
-			if ($hovered.hasClass("inspector-visible")) return;
+			var $previous = $(".inspector-visible");
+
+			if ($hovered.is($previous.last())) return;
 
 			var data = [];
 			var template = Handlebars.templates.inspector;
 
-			$(".inspector-visible").removeClass("inspector-visible");
+			$previous.removeClass("inspector-visible");
 
 			this.addOverlappedElements($hovered).each(function() {
 				var $element = $(this);
